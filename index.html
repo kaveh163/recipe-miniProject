@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <section class="col-6 offset-3">
+        <form action="http://localhost:3000/thanks" method="post" id="frm" enctype="multipart/form-data">
+            <section class="form-group">
+                <label for="sel">Select ingredients from menu:</label>
+                <select id="sel" class="form-control custom-select">
+                    <option selected>Select Menu</option>
+                    <!-- <option>Volvo</option>
+                    <option>Saab</option>
+                    <option>Opel</option>
+                    <option>Audi</option>
+                    <option>BMW</option> -->
+                </select>
+            </section>
+            <section class="form-group">
+                <label for="txt">Selected List of ingredients:</label>
+                <textarea class="form-control" rows="2" id="txt" name="txt" required></textarea>
+            </section>
+
+            <section class="form-group">
+                <label for="ing">Add ingredients manually:</label>
+                <input type="text" id="ing" class="form-control">
+            </section>
+            <section>
+                <button type="submit" class="btn btn-success btn-block" id="ing-btn">Add ingredients manually</button>
+            </section>
+            <br>
+            <section>
+                <button type="submit" class="btn btn-danger btn-block" id="list-btn">Clear List</button>
+            </section>
+            <!-- <section class="form-group">
+                <label for="txt2">ingredients choosen:</label>
+                <textarea class="form-control" rows="2" id="txt2"></textarea>
+            </section> -->
+
+            <section class="form-group">
+                <label for="foodName">food Name</label>
+                <input type="text" name="foodName" id="foodName" class="form-control" required>
+            </section>
+            <section class="custom-file">
+                <input type="file" class="custom-file-input" id="customFile" name="avatar">
+                <label class="custom-file-label" for="customFile">Choose file</label>
+            </section>
+            <section>
+                <button type="submit" class="btn btn-info btn-block">Submit</button>
+            </section>
+        </form>
+    </section>
+    <p id="demo"></p>
+    <script src="./dist/js/jquery-3.3.1.min.js"></script>
+    <script src="./scripts.js"></script>
+    <script>
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+</body>
+
+</html>
