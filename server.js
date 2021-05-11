@@ -35,15 +35,20 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     const obj = {};
     obj['food'] = req.body.foodName;
     obj['image'] = req.file.path;
-    imgStore.push(obj);
+    obj['altName'] = req.file.originalname;
+
     console.log('file', req.file);
-    console.log(imgStore);
+
     // console.log(typeof (req.body.txt));
-    // console.log(req.body.txt);
+    // console.log('txt',req.body.txt);
     const txtString = req.body.txt;
     const patt = /[a-zA-Z]+/g;
     const result = txtString.match(patt);
-    // console.log(result);
+    obj['ingredients'] = result;
+    obj['instruction'] = req.body.inst;
+    imgStore.push(obj);
+    console.log(imgStore);
+    // console.log('result',result);
     if (arrStore.length === 0) {
         // arrStore = [...arrStore, ...result];
         result.forEach((value, index) => {
@@ -75,10 +80,19 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     // console.log('store', arrStore);
 
     // res.end();
-    res.redirect('/');
+    // res.redirect('/home');
+    res.sendFile(`${__dirname}/home.html`);
 })
 app.get('/thanks', function (req, res) {
     res.json(arrStore);
+})
+app.get('/home', function (req, res) {
+    // res.send(`<img src=${imgStore[0].image} alt=${imgStore[0].name}>`);
+    //     res.send(`<figure style="text-align: center;">
+    //     <img src=${imgStore[0].image} alt=${imgStore[0].name}>
+    //     <figcaption>${imgStore[0].food}</figcaption>
+    //   </figure>`)
+    res.json(imgStore);
 })
 app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
