@@ -10,6 +10,7 @@ const app = express();
 const PORT = 3000;
 let arrStore = [];
 let imgStore = [];
+let count = 0;
 app.use(express.json());
 app.use(express.urlencoded({
     extended: false
@@ -32,11 +33,13 @@ const upload = multer({
 })
 
 app.post('/thanks', upload.single('avatar'), function (req, res) {
+    count++;
     const obj = {};
+    obj['id'] = count;
     obj['food'] = req.body.foodName;
     obj['image'] = req.file.path;
     obj['altName'] = req.file.originalname;
-
+    
     console.log('file', req.file);
 
     // console.log(typeof (req.body.txt));

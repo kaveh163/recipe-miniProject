@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>search</title>
+    <link rel="stylesheet" href="./dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./font-awesome-4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <section class="col-8 offset-2 ">
+        <nav class="navbar navbar-expand-sm bg-light justify-content-center">
+
+            <!-- Links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="home.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Post Food</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Search</a>
+                </li>
+            </ul>
+
+        </nav>
+        
+    </section>
+    <section class="col-6 offset-3">
+        <div id="wrap" class="text-center mt-3">
+            <form action="">
+                <section class="form-group">
+                    <label for="inp">Search food by ingredient</label>
+                    <input type="text" class="form-control inp" id="inp" placeholder = "Add Ingredient" name="inp" style="border: inset;">
+                    <div id="addInp"></div>
+                    <span id="icon" class="btn"><i class="fa-lg fa fa-plus-square" aria-hidden="true"></i></span>
+                </section>
+                <section>
+                    <button type="submit" class="btn btn-info btn-block" id="frm-btn">Submit</button>
+                </section>
+            </form>
+            
+        </div>
+    </section>
+    <script src="./dist/js/jquery-3.3.1.min.js"></script>
+    <script src="./search.js"></script>
+</body>
+
+</html>
