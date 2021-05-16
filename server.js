@@ -10,10 +10,11 @@ const app = express();
 const PORT = 3000;
 let arrStore = [];
 let imgStore = [];
+let searchStore = [];
 let count = 0;
 app.use(express.json());
 app.use(express.urlencoded({
-    extended: false
+    extended: true
 }));
 
 app.use(express.static(__dirname));
@@ -50,7 +51,7 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     obj['ingredients'] = result;
     obj['instruction'] = req.body.inst;
     imgStore.push(obj);
-    console.log(imgStore);
+    console.log('imgStore',imgStore);
     // console.log('result',result);
     if (arrStore.length === 0) {
         // arrStore = [...arrStore, ...result];
@@ -84,7 +85,7 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
 
     // res.end();
     // res.redirect('/home');
-    res.sendFile(`${__dirname}/home.html`);
+    res.sendFile(`${__dirname}/index.html`);
 })
 app.get('/thanks', function (req, res) {
     res.json(arrStore);
@@ -96,6 +97,33 @@ app.get('/home', function (req, res) {
     //     <figcaption>${imgStore[0].food}</figcaption>
     //   </figure>`)
     res.json(imgStore);
+})
+app.post('/ingredients', function(req, res) {
+    searchStore = [];
+    console.log('ingredients', req.body);
+    const ingredArr = req.body.ingred;
+    console.log(ingredArr);
+    imgStore.forEach((value, index)=> {
+        let count = 0;
+        if(value.ingredients.length >= ingredArr.length) {
+            for(let i=0; i< value.ingredients.length; i++) {
+                for(let j=0; j< ingredArr.length; j++) {
+                    if(value.ingredients[i] === ingredArr[j]) {
+                        count++;
+                    }
+                }
+                if(count === ingredArr.length) {
+                    searchStore.push(value);
+                    console.log('searchArr', searchStore);
+                    break;
+                }
+            }
+        }
+    })
+    res.redirect('/search');
+})
+app.get('/search', function(req, res) {
+    res.send(searchStore);
 })
 app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);

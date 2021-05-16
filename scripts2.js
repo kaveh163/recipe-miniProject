@@ -1,3 +1,4 @@
+// for index.html
 $(function() {
     $.ajax({
         type: "GET",
