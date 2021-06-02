@@ -54,6 +54,8 @@ $(function () {
                     }
                 })
                 ingStore = [];
+                $('#addInp').empty();
+                $('#inp').val('');
                 $.ajax({
                     type: "GET",
                     url: "http://localhost:3000/search",
