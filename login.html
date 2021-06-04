@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Login</title>
     <link rel="stylesheet" href="./dist/css/bootstrap.min.css">
     <style>
         #alert {
@@ -15,14 +15,15 @@
 </head>
 
 <body>
-    <div class="alert alert-success" id="alert"></div>
-    <section class="col-8 offset-2">
-        <nav class="navbar navbar-expand-sm bg-dark justify-content-around">
+    <div class="alert alert-danger" id="alert"></div>
+    <section>
+        <!-- A grey horizontal navbar that becomes vertical on small screens -->
+        <nav class="navbar navbar-expand-sm bg-light justify-content-around">
 
             <!-- Links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Home</a>
+                    <a class="nav-link" href="index.html">Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="post.html">Post Food</a>
@@ -36,23 +37,34 @@
                     <a class="nav-link" href="register.html" id="reg">Register</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="login.html" id="logged">Login</a>
+                    <a class="nav-link" href="#" id="logged">Login</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="http://localhost:3000/logout">Logout</a>
                 </li>
             </ul>
 
+
         </nav>
     </section>
-    <br>
     <section class="col-6 offset-3">
-        <div id="recipes" class="text-center"></div>
+        <form action="http://localhost:3000/login" method="post">
+            <section class="form-group">
+                <label for="username">username:</label>
+                <input type="text" class="form-control" id="username2" name="username">
+            </section>
+            <section class="form-group">
+                <label for="password">password:</label>
+                <input type="password" class="form-control" id="password2" name="password">
+            </section>
+            <section>
+                <button type="submit" class="btn btn-success btn-block">Submit</button>
+            </section>
+        </form>
     </section>
 
     <script src="./dist/js/jquery-3.3.1.min.js"></script>
-    <script src="./scripts2.js"></script>
-    <script src="./index.js"></script>
+    <script src="./login.js"></script>
     <script src="./loggedin.js"></script>
 </body>
 

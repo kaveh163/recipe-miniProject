@@ -1,8 +1,10 @@
 const express = require('express');
+const session = require('express-session');
+const flash = require('connect-flash');
 const bodyParser = require('body-parser');
 const multer = require('multer');
-
-
+const passport = require('passport');
+const db = require("./models");
 
 const app = express();
 
@@ -12,12 +14,28 @@ let arrStore = [];
 let imgStore = [];
 let searchStore = [];
 let count = 0;
+app.use(express.static(__dirname));
 app.use(express.json());
 app.use(express.urlencoded({
     extended: true
 }));
 
-app.use(express.static(__dirname));
+
+// For passport
+app.use(session({
+    secret: 'keyboard cat',
+    resave: true,
+    saveUninitialized: true
+})); // session secret
+app.use(flash());
+
+app.use(passport.initialize());
+
+app.use(passport.session());
+
+require('./config/passport/passport')(passport);
+require('./routes/user')(app, passport);
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './uploads/')
@@ -40,7 +58,7 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     obj['food'] = req.body.foodName;
     obj['image'] = req.file.path;
     obj['altName'] = req.file.originalname;
-    
+
     console.log('file', req.file);
 
     // console.log(typeof (req.body.txt));
@@ -51,7 +69,7 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     obj['ingredients'] = result;
     obj['instruction'] = req.body.inst;
     imgStore.push(obj);
-    console.log('imgStore',imgStore);
+    console.log('imgStore', imgStore);
     // console.log('result',result);
     if (arrStore.length === 0) {
         // arrStore = [...arrStore, ...result];
@@ -98,21 +116,21 @@ app.get('/home', function (req, res) {
     //   </figure>`)
     res.json(imgStore);
 })
-app.post('/ingredients', function(req, res) {
+app.post('/ingredients', function (req, res) {
     searchStore = [];
     console.log('ingredients', req.body);
     const ingredArr = req.body.ingred;
     console.log(ingredArr);
-    imgStore.forEach((value, index)=> {
+    imgStore.forEach((value, index) => {
         let count = 0;
-        if(value.ingredients.length >= ingredArr.length) {
-            for(let i=0; i< value.ingredients.length; i++) {
-                for(let j=0; j< ingredArr.length; j++) {
-                    if(value.ingredients[i] === ingredArr[j]) {
+        if (value.ingredients.length >= ingredArr.length) {
+            for (let i = 0; i < value.ingredients.length; i++) {
+                for (let j = 0; j < ingredArr.length; j++) {
+                    if (value.ingredients[i] === ingredArr[j]) {
                         count++;
                     }
                 }
-                if(count === ingredArr.length) {
+                if (count === ingredArr.length) {
                     searchStore.push(value);
                     console.log('searchArr', searchStore);
                     break;
@@ -122,9 +140,18 @@ app.post('/ingredients', function(req, res) {
     })
     res.redirect('/search');
 })
-app.get('/search', function(req, res) {
+app.get('/search', function (req, res) {
     res.send(searchStore);
-})
-app.listen(PORT, () => {
-    console.log(`Server listening on http://localhost:${PORT}`);
+});
+
+// app.listen(PORT, () => {
+//     console.log(`Server listening on http://localhost:${PORT}`);
+// });
+
+db.sequelize.sync({
+    force: false
+}).then(function () {
+    app.listen(PORT, function () {
+        console.log("App listening on PORT " + PORT);
+    });
 });
