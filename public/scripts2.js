@@ -8,7 +8,7 @@ $(function() {
             $('#recipes').empty();
             data.forEach((item, index)=> {
                 HTML += `<figure>
-                <img src=${item.image} alt=${item.altName} style="width:250px;height:250px">
+                <img src= ${item.image} alt=${item.altName} style="width:250px;height:250px">
                 <figcaption><h3>Fig.${item.id} - ${item.food}.</h3></figcaption>
               </figure>`;
               HTML += `<label style="font-family: Comic Sans MS, Comic Sans, cursive"> ingredients: </label>`

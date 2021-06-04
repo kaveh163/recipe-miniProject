@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const path = require('path');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
 const multer = require('multer');
@@ -14,7 +15,8 @@ let arrStore = [];
 let imgStore = [];
 let searchStore = [];
 let count = 0;
-app.use(express.static(__dirname));
+app.use(express.static('public'));
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use(express.json());
 app.use(express.urlencoded({
     extended: true
@@ -103,7 +105,8 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
 
     // res.end();
     // res.redirect('/home');
-    res.sendFile(`${__dirname}/index.html`);
+    // res.sendFile(`${__dirname}/index.html`);
+    res.redirect('/index.html');
 })
 app.get('/thanks', function (req, res) {
     res.json(arrStore);
