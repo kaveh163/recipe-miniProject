@@ -144,10 +144,19 @@ app.get('/search', function (req, res) {
     res.send(searchStore);
 });
 
+app.get('/post/food', isLoggedIn, function(req, res) {
+    res.redirect('/post.html');
+})
 // app.listen(PORT, () => {
 //     console.log(`Server listening on http://localhost:${PORT}`);
 // });
-
+function isLoggedIn(req, res, next) {
+    if(req.isAuthenticated()) {
+       return next();
+    } else {
+        res.redirect('/login.html');
+    }
+}
 db.sequelize.sync({
     force: false
 }).then(function () {
