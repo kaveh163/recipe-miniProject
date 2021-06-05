@@ -75,7 +75,9 @@ $(function () {
 
                             })
                             HTML += '</ol>'
-                            HTML += `<p style="font-family: Comic Sans MS, Comic Sans, cursive">instructions: ${item.instruction}</p>`
+                            HTML += `<p style="font-family: Comic Sans MS, Comic Sans, cursive;text-align: center;">instructions:</p>`
+                            HTML += `<p style="font-family: Comic Sans MS, Comic Sans, cursive; text-align: justify;">${item.instruction}</p>`
+                            HTML += `<p><b style="font-family: Comic Sans MS, Comic Sans, cursive">Created by:</b> ${item.user}</p>`
                         })
                         $('#searchFood').append(HTML);
                     },

@@ -70,6 +70,9 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     const result = txtString.match(patt);
     obj['ingredients'] = result;
     obj['instruction'] = req.body.inst;
+    // imgStore.push(obj);
+    // Add user
+    obj['user'] = req.user.firstName;
     imgStore.push(obj);
     console.log('imgStore', imgStore);
     // console.log('result',result);

@@ -32,7 +32,7 @@ module.exports = function(app, passport) {
             successRedirect: '/',
             failureRedirect: '/login.html',
             failureFlash: true,
-            successFlash: 'Welcome!'
+            successFlash: 'Logged In!'
         })
     );
     app.get('/login', function (req, res) {
