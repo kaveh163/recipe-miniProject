@@ -21,7 +21,6 @@ module.exports = function (passport) {
                         message: 'Incorrect username.'
                     });
                 }
-                console.log('here');
                 if (user.password !== password) {
                     return done(null, false, {
                         message: 'Incorrect password.'
@@ -42,7 +41,6 @@ module.exports = function (passport) {
 
 
     passport.serializeUser(function (user, done) {
-        console.log('serialize')
         done(null, user.id);
     });
     // passport.deserializeUser(function (user, done) {
@@ -52,7 +50,6 @@ module.exports = function (passport) {
 
     passport.deserializeUser(async function (id, done) {
         try {
-            console.log('deserialize')
             const user = await User.findByPk(id)
             done(null, user);
         } catch (error) {

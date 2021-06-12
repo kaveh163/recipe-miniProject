@@ -22,8 +22,6 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.TEXT
     },
 
-
-
     email: {
       type: Sequelize.STRING,
       validate: {
@@ -39,7 +37,9 @@ module.exports = function (sequelize, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false
     },
-
+    user_type: {
+      type:Sequelize.INTEGER
+    }
   });
 
   return User;

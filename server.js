@@ -150,19 +150,75 @@ app.get('/search', function (req, res) {
     res.send(searchStore);
 });
 
-app.get('/post/food', isLoggedIn, function(req, res) {
+app.get('/post/food', isLoggedIn, function (req, res) {
     res.redirect('/post.html');
+});
+app.delete('/food/:id', function (req, res) {
+    const id = req.params.id;
+    console.log('del', id);
+    imgStore.forEach((item, index) => {
+        if (item.id === Number(id)) {
+            imgStore.splice(index, 1);
+        }
+    })
+    console.log('Reached Delete');
+    res.send("Succefully deleted food!");
 })
 // app.listen(PORT, () => {
 //     console.log(`Server listening on http://localhost:${PORT}`);
 // });
+
+
+
 function isLoggedIn(req, res, next) {
-    if(req.isAuthenticated()) {
-       return next();
+    if (req.isAuthenticated()) {
+        return next();
     } else {
         res.redirect('/login.html');
     }
 }
+passport.isAuthorized= (userType) => {
+    return (req, res, next) => {
+        console.log('reached authorized');
+        if(req.user) {
+            if (userType === 1) {
+                // user role is admin
+                // console.log('reached authorized');
+                if (req.user.user_type === 1) {
+                    // console.log('reached authorized');
+                    return next();
+                } else {
+                    req.error = "your role is not admin"
+                    // return next();
+                    return res.status(401).send(`<div style="text-align: center;font-size:50px;"><p>401</p><p>UNAUTHORIZED</p></div>`);
+                }
+            }
+            if (userType === 2) {
+                if (req.user.user_type === 2) {
+                    return next();
+                } else {
+                    req.error = "your role is not customer"
+                    // return next();
+                    return res.status(401).send(`<div style="text-align: center;font-size:50px;"><p>401</p><p>UNAUTHORIZED</p></div>`);
+                }
+            }
+        } else {
+            return res.status(401).send(`<div style="text-align: center;font-size:50px;"><p>401</p><p>UNAUTHORIZED</p></div>`);
+        }
+        
+    }
+}
+app.get('/manage', passport.isAuthorized(1), function (req, res) {
+    console.log('reached manage');
+    // console.log(req.error);
+    // if(req.error) {
+    //     res.send(req.error)
+    // } else {
+    //     res.redirect('/manage.html');
+    // }
+    res.redirect('/manage.html');
+    
+})
 db.sequelize.sync({
     force: false
 }).then(function () {
