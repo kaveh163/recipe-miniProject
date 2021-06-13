@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const fs = require('fs');
 const path = require('path');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
@@ -85,9 +86,9 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     const result = txtString.match(patt);
     obj['ingredients'] = result;
     obj['instruction'] = req.body.inst;
-    // imgStore.push(obj);
     // Add user
     obj['user'] = req.user.firstName;
+    // obj['filename'] = req.file.filename; 
     imgStore.push(obj);
     console.log('imgStore', imgStore);
 
@@ -201,6 +202,7 @@ app.delete('/food/:id', function (req, res) {
     console.log(foodArr);
     foodArr.forEach((item, index) => {
         if (item.id === Number(id)) {
+            fs.unlinkSync(`${item.image}`);
             foodArr.splice(index, 1);
         }
 
