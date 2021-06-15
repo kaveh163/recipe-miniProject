@@ -34,6 +34,8 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 })); // session secret
+
+// app.use(require('flash')());
 app.use(flash());
 
 app.use(passport.initialize());
@@ -138,7 +140,9 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     // res.end();
     // res.redirect('/home');
     // res.sendFile(`${__dirname}/index.html`);
-    res.redirect('/index.html');
+    req.session.flash = [];
+    req.flash('success').splice(0, req.flash('success').length);
+    res.redirect('/');
 })
 app.get('/thanks', function (req, res) {
     res.json(arrStore);
@@ -154,6 +158,11 @@ app.get('/home', function (req, res) {
     let foodArr = JSON.parse(localStorage.getItem('food'));
     // res.json(imgStore);
     res.json(foodArr);
+})
+app.get('/index', function (req, res) {
+    req.session.flash = [];
+    req.flash('success').splice(0, req.flash('success').length);
+    res.redirect('/');
 })
 app.post('/ingredients', function (req, res) {
     searchStore = [];

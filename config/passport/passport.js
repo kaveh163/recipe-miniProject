@@ -6,9 +6,9 @@ const LocalStrategy = require('passport-local').Strategy;
 // function to be called while there is a new sign/signup 
 // We are using passport local signin/signup strategies for our app
 module.exports = function (passport) {
-    
 
-    passport.use('local-signin',new LocalStrategy(
+
+    passport.use('local-signin', new LocalStrategy(
         async function (username, password, done) {
             try {
                 const user = await User.findOne({
@@ -21,13 +21,21 @@ module.exports = function (passport) {
                         message: 'Incorrect username.'
                     });
                 }
-                if (user.password !== password) {
+                const isPassword = bcrypt.compareSync(password, user.genHash);
+                if (isPassword) {
+                    return done(null, user);
+                } else {
                     return done(null, false, {
                         message: 'Incorrect password.'
                     });
                 }
+                // if (user.password !== password) {
+                //     return done(null, false, {
+                //         message: 'Incorrect password.'
+                //     });
+                // }
 
-                return done(null, user);
+                // return done(null, user);
             } catch (error) {
                 console.log(error);
             }
@@ -54,7 +62,7 @@ module.exports = function (passport) {
             done(null, user);
         } catch (error) {
             console.log('found error', error);
-            
+
         }
     });
 
