@@ -21,6 +21,7 @@ module.exports = function (app, passport) {
         });
         if (user) {
             req.flash('info', 'Invalid Email');
+            req.session.flash2 = req.flash('info');
             res.redirect('/register.html');
         } else {
             const newUser = await User.create(data);
@@ -28,34 +29,63 @@ module.exports = function (app, passport) {
         }
 
     })
-    app.post('/login',
-        passport.authenticate('local-signin', {
-            // successRedirect: '/',
-            failureRedirect: '/login.html',
-            failureFlash: true,
-            // successFlash: 'Logged In!'
-        }),
-        function (req, res) {
-            // res.locals.flash = [];
-            req.flash('success', 'Logged In!');
-            req.session.flash = req.flash('success');
-            console.log('flashlogout', req.flash('success'));
-            req.flash('success').splice(0, req.flash('success').length);
-            console.log('session', req.session);
-            // req.session.flash = res.locals.flash;
-            res.redirect('/');
-        }
-    );
+    // app.post('/login',
+    //     passport.authenticate('local-signin', {
+    //         // successRedirect: '/',
+    //         failureRedirect: '/login.html',
+    //         failureFlash: true,
+    //         // successFlash: 'Logged In!'
+    //     }),
+    //     function (req, res) {
+
+    //             // res.locals.flash = [];
+    //             req.flash('success', 'Logged In!');
+    //             req.session.flash = req.flash('success');
+    //             console.log('flashlogout', req.flash('success'));
+    //             // req.flash('success').splice(0, req.flash('success').length);
+    //             console.log('session', req.session);
+    //             // req.session.flash = res.locals.flash;
+    //             res.redirect('/');
+
+
+    //     }
+    // );
+    app.post('/login', function (req, res, next) {
+        passport.authenticate('local-signin', {failureFlash: true},function (err, user, info) {
+            if (err) {
+                return next(err);
+            }
+            if (!user) {
+                // console.log(req.flash('loginMessage'));
+                req.session.error = req.flash('loginMessage');
+                // console.log(req.flash('loginMessage'));
+                console.log(req.session);
+                return res.redirect('/login.html')
+            }
+            req.logIn(user, function (err) {
+                if (err) {
+                    return next(err);
+                }
+                req.flash('success', 'Logged In!');
+                req.session.flash = req.flash('success');
+                console.log(req.session);
+                return res.redirect('/');
+            });
+        })(req, res, next);
+    });
     app.get('/login', function (req, res) {
+        const error = req.session.error;
+        req.session.error = [];
         res.json({
-            error: req.flash('error')
+            // error: req.flash('error')
+            error: error
         });
     })
 
     app.get('/flash', function (req, res) {
         let flashMess = req.session.flash;
         req.session.flash = [];
-        req.flash('success').splice(0, req.flash('success').length);
+        // req.flash('success').splice(0, req.flash('success').length);
         res.json({
             mess: flashMess
         })
@@ -76,8 +106,11 @@ module.exports = function (app, passport) {
     //     });
     // })
     app.get('/register', function (req, res) {
+        const info = req.session.flash2;
+        req.session.flash2 = [];
         res.json({
-            info: req.flash('info')
+            // info: req.flash('info')
+            info: info
         });
     })
     app.get('/loggedin', function (req, res) {
@@ -90,7 +123,7 @@ module.exports = function (app, passport) {
         req.flash('success', "Successfully Logged Out");
         req.session.flash = req.flash('success');
 
-        req.flash('success').splice(0, req.flash('success').length);
+        // req.flash('success').splice(0, req.flash('success').length);
         // req.session.flash = res.locals.flash;
         // req.flash('logout', '');
         req.logout();
@@ -100,7 +133,7 @@ module.exports = function (app, passport) {
 
         res.redirect('/');
     });
-    
+
     //logout/user route
     // app.get('/logout/user', function (req, res) {
     //     // let flashMess = req.session.flash;

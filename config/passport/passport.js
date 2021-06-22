@@ -8,8 +8,8 @@ const LocalStrategy = require('passport-local').Strategy;
 module.exports = function (passport) {
 
 
-    passport.use('local-signin', new LocalStrategy(
-        async function (username, password, done) {
+    passport.use('local-signin', new LocalStrategy({passReqToCallback: true},
+        async function (req, username, password, done) {
             try {
                 const user = await User.findOne({
                     where: {
@@ -17,18 +17,30 @@ module.exports = function (passport) {
                     }
                 })
                 if (!user) {
-                    return done(null, false, {
-                        message: 'Incorrect username.'
-                    });
+                    // return done(null, false, {
+                    //     message: 'Incorrect username.'
+                    // });
+                    return done(null, false, req.flash('loginMessage', 'Incorrect username'));
                 }
                 const isPassword = bcrypt.compareSync(password, user.genHash);
-                if (isPassword) {
-                    return done(null, user);
-                } else {
-                    return done(null, false, {
-                        message: 'Incorrect password.'
-                    });
+                // if (isPassword) {
+                //     return done(null, user);
+                // } else {
+                //     return done(null, false, {
+                //         message: 'Incorrect password.'
+                //     });
+                // }
+                // if(!isPassword) {
+                //     return done(null, false, {
+                //         message: "Incorrect Password"
+                //     })
+                // }
+                if(!isPassword) {
+                    return done(null, false, req.flash('loginMessage', "Incorrect Password"));
                 }
+                return done(null, user);
+
+
                 // if (user.password !== password) {
                 //     return done(null, false, {
                 //         message: 'Incorrect password.'

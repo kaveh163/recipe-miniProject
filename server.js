@@ -141,7 +141,7 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     // res.redirect('/home');
     // res.sendFile(`${__dirname}/index.html`);
     req.session.flash = [];
-    req.flash('success').splice(0, req.flash('success').length);
+    // req.flash('success').splice(0, req.flash('success').length);
     res.redirect('/');
 })
 app.get('/thanks', function (req, res) {
@@ -161,7 +161,7 @@ app.get('/home', function (req, res) {
 })
 app.get('/index', function (req, res) {
     req.session.flash = [];
-    req.flash('success').splice(0, req.flash('success').length);
+    // req.flash('success').splice(0, req.flash('success').length);
     res.redirect('/');
 })
 app.post('/ingredients', function (req, res) {
