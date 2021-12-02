@@ -1,7 +1,7 @@
 $(function() {
     $.ajax({
         method: "GET",
-        url: 'http://localhost:3000/register',
+        url: '/register',
         success: function(data) {
             if(data.info[0]) {
                 $('#alert').empty();

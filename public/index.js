@@ -3,7 +3,7 @@ $(function () {
     // ajax to flash
     $.ajax({
         method: "GET",
-        url: 'http://localhost:3000/flash',
+        url: '/flash',
         success: function (data) {
             if (data.mess[0]) {
 

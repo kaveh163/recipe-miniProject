@@ -45,7 +45,7 @@ $(function () {
                 console.log(Array.isArray(ingStore));
                 $.ajax({
                     method: "POST",
-                    url: "http://localhost:3000/ingredients",
+                    url: "/ingredients",
                     data: {
                         'ingred': ingStore
                     },
@@ -58,7 +58,7 @@ $(function () {
                 $('#inp').val('');
                 $.ajax({
                     type: "GET",
-                    url: "http://localhost:3000/search",
+                    url: "/search",
                     success: function (data) {
                         let HTML = "";
                         $('#searchFood').empty();

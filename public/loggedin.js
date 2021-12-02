@@ -1,7 +1,7 @@
 $(function(){
     $.ajax({
         method: 'GET',
-        url:'http://localhost:3000/loggedin',
+        url:'/loggedin',
         success: function(data) {
             if(data) {
                 $('#logged').css('display', 'none');

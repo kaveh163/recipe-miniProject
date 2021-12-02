@@ -48,7 +48,7 @@ $(function () {
     })
     $.ajax({
         type: "GET",
-        url: "http://localhost:3000/thanks",
+        url: "/thanks",
         success: function (data) {
             let myHTML = "";
             $('#sel').empty();

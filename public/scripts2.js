@@ -2,7 +2,7 @@
 $(function() {
     $.ajax({
         type: "GET",
-        url:"http://localhost:3000/home",
+        url:"/home",
         success: function(data) {
             let HTML = "";
             $('#recipes').empty();

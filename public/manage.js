@@ -2,7 +2,7 @@ $(function(){
     function getFood() {
         $.ajax({
             method: 'GET',
-            url: 'http://localhost:3000/home',
+            url: '/home',
             success: function(data) {
                 let HTML = "";
                 $('#tbody').empty();
@@ -26,7 +26,7 @@ $(function(){
        console.log(id);
        $.ajax({
            method: 'DELETE',
-           url: "http://localhost:3000/food/" + id,
+           url: "/food/" + id,
            success: function (data) {
                console.log(data);
                getFood();
