@@ -9,7 +9,7 @@ $(function() {
             data.forEach((item, index)=> {
                 HTML += `<figure>
                 <img src= ${item.image} alt=${item.altName} style="width:100%;height:250px">
-                <figcaption><h3>Fig.${item.id} - ${item.food}.</h3></figcaption>
+                <figcaption><h3 class="fontRes">Fig.${item.id} - ${item.food}.</h3></figcaption>
               </figure>`;
               HTML += '<div class="d-flex justify-content-center">'
               HTML += '<div class="text-center">'
