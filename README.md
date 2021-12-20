@@ -7,6 +7,7 @@ Below are the snapshots of the project.
 ![Mini Food App](Assets/miniFoodApp.PNG)
 
 #
+Admin route
 ![Mini Food App](Assets/miniFoodApp2.PNG)
 
 ## Instructions
