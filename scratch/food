@@ -1,1 +1,1 @@
-[{"id":1,"food":"Pizza","image":"uploads\\avatar-1624348685690.jpg","altName":"pizza.jpg","ingredients":["salt"],"instruction":"This is Pizza","user":"Kaveh"},{"id":2,"food":"Pasta","image":"uploads\\avatar-1624349236926.jpg","altName":"pasta.jpg","ingredients":["salt","pepper"],"instruction":"This is Pasta","user":"Brad"}]
+[{"id":1,"food":"Pizza","image":"uploads\\avatar-1639063592437.jpg","altName":"pizza.jpg","ingredients":["salt","pepper"],"instruction":"This is pizza","user":"Kaveh"}]
