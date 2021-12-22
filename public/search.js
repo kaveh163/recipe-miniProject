@@ -65,19 +65,23 @@ $(function () {
                         data.forEach((item, index) => {
                             HTML += `<figure>
                             <img src=${item.image} alt=${item.altName} style="width:250px;height:250px">
-                            <figcaption><h3>Fig.${item.id} - ${item.food}.</h3></figcaption>
+                            <figcaption><h3 class="fontRes">Fig.${item.id} - ${item.food}.</h3></figcaption>
                           </figure>`;
-                            HTML += `<label style="font-family: Comic Sans MS, Comic Sans, cursive"> ingredients: </label>`
-                            HTML += '<ol style="margin-left: auto; margin-right: auto; width:50%; padding-left:140px">'
+                          HTML += '<div class="d-flex justify-content-center">'
+                            HTML += '<div class="text-center">'
+                            HTML += `<label style="font-family: Comic Sans MS, Comic Sans, cursive" class="d-block"> ingredients: </label>`
+                            HTML += '<ol>'
                             item.ingredients.forEach((value, index) => {
 
-                                HTML += `<li style="width:50px">${value}</li>`
+                                HTML += `<li>${value}</li>`
 
                             })
                             HTML += '</ol>'
                             HTML += `<p style="font-family: Comic Sans MS, Comic Sans, cursive;text-align: center;">instructions:</p>`
                             HTML += `<p style="font-family: Comic Sans MS, Comic Sans, cursive; text-align: justify;text-align-last: center;">${item.instruction}</p>`
                             HTML += `<p><b style="font-family: Comic Sans MS, Comic Sans, cursive">Created by:</b> ${item.user}</p>`
+                            HTML += '</div>'
+                            HTML += '</div>'
                         })
                         $('#searchFood').append(HTML);
                     },

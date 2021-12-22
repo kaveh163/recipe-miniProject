@@ -76,19 +76,30 @@ module.exports = function (app, passport) {
     app.get('/login', function (req, res) {
         const error = req.session.error;
         req.session.error = [];
-        res.json({
-            // error: req.flash('error')
-            error: error
-        });
+        if(error === undefined) {
+            return res.send('undefined');
+        } else {
+            return res.json({
+                // error: req.flash('error')
+                error: error
+            });
+        }
+        
     })
 
     app.get('/flash', function (req, res) {
         let flashMess = req.session.flash;
+        console.log('flashMess', flashMess);
         req.session.flash = [];
         // req.flash('success').splice(0, req.flash('success').length);
-        res.json({
-            mess: flashMess
-        })
+        if (flashMess === undefined) {
+            return res.send('undefined');
+        } else {
+            return res.json({
+                mess: flashMess
+            })
+        }
+        
     })
     // success route
     // app.get('/success', function (req, res) {
@@ -108,10 +119,15 @@ module.exports = function (app, passport) {
     app.get('/register', function (req, res) {
         const info = req.session.flash2;
         req.session.flash2 = [];
-        res.json({
-            // info: req.flash('info')
-            info: info
-        });
+        if(info === undefined) {
+            return res.send('undefined');
+        } else {
+            return res.json({
+                // info: req.flash('info')
+                info: info
+            });
+        }
+        
     })
     app.get('/loggedin', function (req, res) {
         res.send(req.user);

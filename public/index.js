@@ -5,8 +5,9 @@ $(function () {
         method: "GET",
         url: '/flash',
         success: function (data) {
-            if (data.mess[0]) {
-
+            
+            if (data !== "undefined") {
+                console.log('messArray', JSON.stringify(data.mess));
                 let lastItem = data.mess.pop();
                 $('#alert').empty();
                 $('#alert').css('display', 'block');
