@@ -1,9 +1,14 @@
 # Mini Food App
 
-This app was built using the express module.
-In this project I made a recipe app which basically allows the users of the app to post food. Users of the app are required to register and login to post the foods along with their ingredients, instruction and image. This app has a search facility which visitors of the website can view the recipes by the ingredients specified. The admin of the website has its own route to take control of the posted food, the user which created it, the food's image and delete the recipies. This app uses sequelize for the user model, MySQl database for the users table,local storage for storing the recipes and sessions to keep track of the users. The authentication was done through Passport.js tool. Images were uploaded using multer node package module. Flash messages were used to notify the users whether they have logged in or logged out. The login session is terminated when the user logs out.
+In this project I made an Express based recipe app which allows the users of the app to post food recipes. Users of the app are required to register and login to post the recipes along with their ingredients, instructions and an image. This app has a search facility which allows visitors of the website to find recipes based on input ingredients. The admin of the website has its own route that gives it special previleges such as deleting the recipies. This app uses MySQL as the backend storage for storing user tables and interacts with it through sequelize. 
+Other noteworthy npm packages used in this app are:
+* node-localstorage: used for storing each user's recipes and the sessions that keep track of the users. The login session is terminated when the user logs out.
+* passport: used for authenticating users
+* multer: used for uploading images
+* connect-flash: used for notifying users of their login status
 
-Below are the snapshots of the project.
+Below are snapshots of the project.
+
 ![Mini Food App](Assets/miniFoodApp.PNG)
 
 #
@@ -12,18 +17,18 @@ Admin route
 
 ## Instructions
 
-* Install MySQL server.
-* Create your desired database in MySQL server.
-* In the config.json file in the config folder of the app, specify the database you have created in the development mode.
-* Install the Node.js dependencies by using the "npm install" command and run the Node.js app.
-* The users table will be created in the database and the app starts.
-* Make sure you are connected to MySQL database when running the app.
+1. Install MySQL server.
+2. Create your desired database in MySQL server.
+3. In the config.json file (located in config folder), specify the database you have created in the development section.
+4. Install the Node.js dependencies by using the "npm install" command and run "node server.js".
+5. The users table will be created in the database and the app will start.
+6. Make sure you are connected to MySQL database when running the app.
 
 ## Usage
-This app provides the visitors with the recipes posted by different users and to search them by ingredients.
+This app provides visitors with the recipes posted by different users and allows them to search recipes by ingredients.
 
 ## Tests
 This app was tested manually.
 
 ## Future
-More features such as updating the recipies and making validations for the users data will be added in future.
+More features such as allowing the user to modify their recipes and adding input validations during user registration will be made in the future.
