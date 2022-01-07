@@ -1,0 +1,33 @@
+.label,.ingList{
+    color:white;
+    background-color: red;
+    border-radius: 25px;
+    padding: 8px;
+    margin-top: 10px;
+}
+.ingList {
+    background-color: green;
+}
+#sel,#ing,#inst,#foodName {
+    border:1px inset red;
+}
+#txt {
+    border:1px inset green;
+}
+#ing-btn, #list-btn {
+    /* background-color: green; */
+    margin-top: 5px;
+    border-radius: 10px;
+    border: 2px inset red;
+}
+#list-btn {
+    margin-top: -20px;
+}
+.subbtn {
+    border-radius: 10px;
+    border: 2px inset red;
+    color: darkblue!important;
+}
+.custom-file-label {
+    border: 1px inset red;
+}
