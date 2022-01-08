@@ -7,18 +7,18 @@ $(function () {
         // console.log(inputVal);
         if (inputVal) {
             if (ingStore.length === 0) {
-                ingStore.push(inputVal.toLowerCase());
+                ingStore.push(inputVal);
                 console.log('ing', ingStore);
                 $('#addInp').append(inputHTML);
             } else {
                 for (let i = 0; i < ingStore.length; i++) {
                     count++;
-                    if (ingStore[i].toUpperCase() == inputVal.toUpperCase()) {
+                    if (ingStore[i] == inputVal) {
                         count = 0;
                         break;
                     } else {
                         if (count === ingStore.length) {
-                            ingStore.push(inputVal.toLowerCase());
+                            ingStore.push(inputVal);
                             $('#addInp').append(inputHTML);
                         }
                     }
@@ -39,8 +39,8 @@ $(function () {
         event.preventDefault();
         let inputVal2 = $('.inp:last').val();
         if (inputVal2) {
-            if (ingStore.indexOf(inputVal2.toLowerCase()) === -1) {
-                ingStore.push(inputVal2.toLowerCase());
+            if (ingStore.indexOf(inputVal2) === -1) {
+                ingStore.push(inputVal2);
                 console.log('ingredients', ingStore);
                 console.log(Array.isArray(ingStore));
                 $.ajax({
