@@ -4,6 +4,7 @@
     border-radius: 25px;
     padding: 8px;
     margin-top: 10px;
+    opacity: 0.5;
 }
 .ingList {
     background-color: green;
