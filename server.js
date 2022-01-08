@@ -20,6 +20,7 @@ let arrStore = [];
 let imgStore = [];
 let searchStore = [];
 let count = 0;
+
 app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use(express.json());
@@ -83,10 +84,18 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
 
     // console.log(typeof (req.body.txt));
     // console.log('txt',req.body.txt);
+
     const txtString = req.body.txt;
-    const patt = /[a-zA-Z]+/g;
-    const result = txtString.match(patt);
-    obj['ingredients'] = result;
+    //temporary delete these two statements
+
+    // const patt = /[a-zA-Z]+/g;
+    // const result = txtString.match(patt);
+    //end temporary delete these two statements
+    console.log('txtString', txtString);
+    //get the ingredient string and turn it into an array of ingredients
+    let splitTxt = txtString.split(',');
+    console.log('server ingredients', splitTxt);
+    obj['ingredients'] = splitTxt;
     obj['instruction'] = req.body.inst;
     // Add user
     obj['user'] = req.user.firstName;
@@ -94,7 +103,7 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     imgStore.push(obj);
     console.log('imgStore', imgStore);
 
-    // Local Storage
+    //node Local Storage
     let foodArr = JSON.parse(localStorage.getItem("food"));
     if (foodArr === null) {
         foodArr = [];
@@ -105,49 +114,65 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
         localStorage.setItem('food', JSON.stringify(foodArr));
     }
 
+    
 
-    // console.log('result',result);
-    if (arrStore.length === 0) {
-        // arrStore = [...arrStore, ...result];
-        result.forEach((value, index) => {
-            arrStore.push(value.toLowerCase());
-        })
+    //store in node-local-storage
+    let ingArr = JSON.parse(localStorage.getItem("ingredient"));
+    if(ingArr === null) {
+        ingArr = [];
+        splitTxt.forEach((value, index) => {
+            ingArr.push(value.toLowerCase());
+
+        });
+        localStorage.setItem('ingredient', JSON.stringify(ingArr));
     } else {
-        // result.forEach((value, index)=> {
-
-        //     if(arrStore.indexOf(value) === -1) {
-        //         arrStore.push(value);
-        //     }
-        // })
-        for (let i = 0; i < result.length; i++) {
-            let count = 0;
-            for (let j = 0; j < arrStore.length; j++) {
-                if (arrStore[j].toUpperCase() === result[i].toUpperCase()) {
-                    count++;
-                    break;
-                }
+        for (let i = 0; i < splitTxt.length; i++) {
+            if (ingArr.indexOf(splitTxt[i]) === -1) {
+                ingArr.push(splitTxt[i]);
             }
-            if (count === 0) {
-                arrStore.push(result[i].toLowerCase());
-            }
-
+            
         }
+        localStorage.setItem('ingredient', JSON.stringify(ingArr))
+    }
+    // end node local storage for ingredients
+    // store the ingredients in arrStore array 
+    if (arrStore.length === 0) {
+
+        splitTxt.forEach((value, index) => {
+            arrStore.push(value.toLowerCase());
+
+        })
+        console.log('arrStore1', arrStore)
+    } else {
+
+
+        // let count = 0;
+        for (let i = 0; i < splitTxt.length; i++) {
+            if (arrStore.indexOf(splitTxt[i]) === -1) {
+                arrStore.push(splitTxt[i]);
+            }
+            
+        }
+        
 
     }
-    // arrStore = [...arrStore, ...result];
-    // console.log('store', arrStore);
 
-    // res.end();
-    // res.redirect('/home');
-    // res.sendFile(`${__dirname}/index.html`);
+    //end storing in arrStore array
+
+    
     req.session.flash = [];
     // req.flash('success').splice(0, req.flash('success').length);
     res.redirect('/');
 })
 app.get('/thanks', function (req, res) {
-    res.json(arrStore);
+    let ingArr = JSON.parse(localStorage.getItem("ingredient"));
+    // res.json(arrStore);
+    res.json(ingArr);
+
 })
+
 app.get('/home', function (req, res) {
+    
     // res.send(`<img src=${imgStore[0].image} alt=${imgStore[0].name}>`);
     //     res.send(`<figure style="text-align: center;">
     //     <img src=${imgStore[0].image} alt=${imgStore[0].name}>
