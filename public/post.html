@@ -72,7 +72,7 @@
                 <label for="txt" class="ingList">Ingredients</label>
                 <textarea readonly class="form-control" rows="5" id="txt" name="txt" required></textarea>
             </section>
-            
+
             <br>
             <section class="text-center">
                 <button type="submit" class="btn btn-outline-danger" id="list-btn">Clear List</button>
@@ -82,27 +82,75 @@
                 <textarea class="form-control" rows="2" id="txt2"></textarea>
             </section> -->
 
-            
-            
+
+
             <section class="form-group">
                 <label for="inst" class="label">instructions</label>
                 <textarea class="form-control" rows="5" id="inst" name="inst" required></textarea>
             </section>
             <section class="text-center">
-                <button type="submit" class="btn btn-outline-info subbtn">Submit</button>
+                <button type="button" class="btn btn-outline-info subbtn" id="postButton">Submit</button>
             </section>
         </form>
     </section>
     <p id="demo"></p>
     <script src="./dist/js/jquery-3.3.1.min.js"></script>
     <script src="./scripts.js"></script>
+    <!-- <script src="./scripts2.js"></script> -->
     <script src="./loggedin.js"></script>
     <script>
+        let files;
+        let file;
         // Add the following code if you want the name of the file appear on select
         $(".custom-file-input").on("change", function () {
+
             var fileName = $(this).val().split("\\").pop();
             $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            files = document.querySelector(".custom-file-input").files;
+            file = files[0];
+            console.log('inputFiles', files);
+            console.log('inputfile', file);
         });
+
+        // document.getElementById('postButton').onclick = () => {
+        //     document.getElementById('frm').onsubmit = () => {
+        //         // window.open('/', '_blank');
+        //         getSignedRequest(file);
+
+        //     };
+
+        // }
+
+
+        document.getElementById('postButton').onclick = () => {
+            console.log(file);
+            
+            getSignedRequest(file);
+            document.getElementById('frm').submit();
+            window.open('/', '_blank');
+
+        }
+
+        function getSignedRequest(file) {
+
+            const xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        console.log('I"m here');
+                        
+
+                        const response = JSON.parse(xhr.responseText);
+                        // uploadFile(file, response.signedRequest, response.url);
+                    } else {
+                        alert('Could not get signed URL.');
+                    }
+                }
+            };
+            xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`, true);
+            xhr.send();
+        }
     </script>
 
 </body>

@@ -138,15 +138,18 @@ $(function () {
         type: "GET",
         url: "/thanks",
         success: function (data) {
-            let myHTML = "";
-            $('#sel').empty();
-            console.log(data);
-            myHTML += "<option selected>Select Menu</option>"
-            data.forEach((value, index) => {
-                myHTML += `<option>${value}</option>`
-            })
+            if(data) {
+                let myHTML = "";
+                $('#sel').empty();
+                console.log(data);
+                myHTML += "<option selected>Select Menu</option>"
+                data.forEach((value, index) => {
+                    myHTML += `<option>${value}</option>`
+                })
+                
+                $('#sel').append(myHTML);
+            }
             
-            $('#sel').append(myHTML);
 
         },
         error: function (textStatus) {

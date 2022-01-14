@@ -1,4 +1,6 @@
 const express = require('express');
+const cors = require('cors')
+const aws = require('aws-sdk');
 const session = require('express-session');
 const fs = require('fs');
 const path = require('path');
@@ -8,14 +10,17 @@ const multer = require('multer');
 const passport = require('passport');
 const db = require("./models");
 
+
 if (typeof localStorage === "undefined" || localStorage === null) {
     var LocalStorage = require('node-localstorage').LocalStorage;
     localStorage = new LocalStorage('./scratch');
 }
 const app = express();
-
+app.use(cors());
 
 const PORT = process.env.PORT || 3000;
+const S3_BUCKET = process.env.S3_BUCKET || 'myBucket';
+aws.config.region = 'ca-central-1';
 let arrStore = [];
 let imgStore = [];
 let searchStore = [];
@@ -74,7 +79,12 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
         localStorage.setItem("count", JSON.stringify(count2));
     }
 
-    const obj = {};
+    // node local storage
+    
+
+    // const obj = {};
+    let foodArr = JSON.parse(localStorage.getItem("food"));
+    let obj = foodArr.pop();
     obj['id'] = JSON.parse(localStorage.getItem("count"));
     obj['food'] = req.body.foodName;
     obj['image'] = req.file.path;
@@ -101,24 +111,42 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     obj['user'] = req.user.firstName;
     // obj['filename'] = req.file.filename; 
     imgStore.push(obj);
-    console.log('imgStore', imgStore);
+    foodArr.push(obj);
+    localStorage.setItem('food', JSON.stringify(foodArr));
+    // let foodArr = JSON.parse(localStorage.getItem("food"));
+    // if (foodArr === null) {
+    //     foodArr = [];
+    //     foodArr.push(obj);
+    //     console.log('foodArr',foodArr);
+    //     localStorage.setItem('food', JSON.stringify(foodArr));
+    // } else {
+    //     foodArr.push(obj);
+    //     console.log('foodArr',foodArr)
+    //     localStorage.setItem('food', JSON.stringify(foodArr));
+    // }
+    
+
+
+
+
+    // end node local storage
 
     //node Local Storage
-    let foodArr = JSON.parse(localStorage.getItem("food"));
-    if (foodArr === null) {
-        foodArr = [];
-        foodArr.push(obj);
-        localStorage.setItem('food', JSON.stringify(foodArr));
-    } else {
-        foodArr.push(obj);
-        localStorage.setItem('food', JSON.stringify(foodArr));
-    }
+    // let foodArr = JSON.parse(localStorage.getItem("food"));
+    // if (foodArr === null) {
+    //     foodArr = [];
+    //     foodArr.push(obj);
+    //     localStorage.setItem('food', JSON.stringify(foodArr));
+    // } else {
+    //     foodArr.push(obj);
+    //     localStorage.setItem('food', JSON.stringify(foodArr));
+    // }
 
-    
+
 
     //store in node-local-storage
     let ingArr = JSON.parse(localStorage.getItem("ingredient"));
-    if(ingArr === null) {
+    if (ingArr === null) {
         ingArr = [];
         splitTxt.forEach((value, index) => {
             ingArr.push(value.toLowerCase());
@@ -130,7 +158,7 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
             if (ingArr.indexOf(splitTxt[i]) === -1) {
                 ingArr.push(splitTxt[i]);
             }
-            
+
         }
         localStorage.setItem('ingredient', JSON.stringify(ingArr))
     }
@@ -151,19 +179,77 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
             if (arrStore.indexOf(splitTxt[i]) === -1) {
                 arrStore.push(splitTxt[i]);
             }
-            
+
         }
-        
+
 
     }
 
     //end storing in arrStore array
 
-    
+
     req.session.flash = [];
     // req.flash('success').splice(0, req.flash('success').length);
-    res.redirect('/');
+    // res.redirect('/');
+    res.end();
 })
+
+app.get('/sign-s3', (req, res) => {
+    // const s3 = new aws.S3();
+    const fileName = req.query['file-name'];
+    const fileType = req.query['file-type'];
+    // const s3Params = {
+    //     Bucket: S3_BUCKET,
+    //     Key: fileName,
+    //     Expires: 60,
+    //     ContentType: fileType,
+    //     ACL: 'public-read'
+    // };
+
+    // s3.getSignedUrl('putObject', s3Params, (err, data) => {
+    // if (err) {
+    //     console.log(err);
+    //     return res.end();
+    // }
+    const returnData = {
+        signedRequest: 'data',
+        url: `./uploads/${fileName}`
+    };
+
+    // let foodArr = JSON.parse(localStorage.getItem('food'));
+    // let obj = foodArr.pop();
+    // obj['url'] = returnData.url;
+    // foodArr.push(obj);
+    // console.log('foodArr2', foodArr);
+    // localStorage.setItem('food', JSON.stringify(foodArr));
+
+    
+    // let foodArr = JSON.parse(localStorage.getItem("food"));
+    // console.log(foodArr);
+    // let obj = foodArr.pop();
+    // obj['url'] = returnData.url;
+    // foodArr.push(obj);
+    // console.log('foodArr2', foodArr);
+    // localStorage.setItem('food', JSON.stringify(foodArr));
+    let obj = {};
+    let foodArr = JSON.parse(localStorage.getItem("food"));
+    if (foodArr === null) {
+        foodArr = [];
+        obj['url'] = returnData.url;
+        foodArr.push(obj);
+        localStorage.setItem('food', JSON.stringify(foodArr));
+    } else {
+        obj['url'] = returnData.url;
+        foodArr.push(obj);
+        localStorage.setItem('food', JSON.stringify(foodArr));
+    }
+
+    console.log('returnData', returnData)
+    res.write(JSON.stringify(returnData));
+    res.end();
+    // });
+});
+
 app.get('/thanks', function (req, res) {
     let ingArr = JSON.parse(localStorage.getItem("ingredient"));
     // res.json(arrStore);
@@ -172,7 +258,7 @@ app.get('/thanks', function (req, res) {
 })
 
 app.get('/home', function (req, res) {
-    
+
     // res.send(`<img src=${imgStore[0].image} alt=${imgStore[0].name}>`);
     //     res.send(`<figure style="text-align: center;">
     //     <img src=${imgStore[0].image} alt=${imgStore[0].name}>
