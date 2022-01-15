@@ -65,6 +65,11 @@
                 <label for="ing" class="label">Add ingredients if not above</label>
                 <input type="text" id="ing" class="form-control">
             </section>
+            <!-- hidden input for image url recieved from sign-s3 -->
+            <section class="form-group">
+                <input type="text" id="url" name="url" class="form-control">
+            </section>
+            <!-- end of hidden input for image url recieved from sign-s3 -->
             <section class="text-center">
                 <button type="submit" class="btn btn-outline-danger" id="ing-btn">Add ingredient</button>
             </section>
@@ -126,8 +131,8 @@
             console.log(file);
             
             getSignedRequest(file);
-            document.getElementById('frm').submit();
-            window.open('/', '_blank');
+            // document.getElementById('frm').submit();
+            
 
         }
 
@@ -142,6 +147,9 @@
                         
 
                         const response = JSON.parse(xhr.responseText);
+                        console.log(response);
+                        $('#url').val(response.url);
+                        document.getElementById('frm').submit();
                         // uploadFile(file, response.signedRequest, response.url);
                     } else {
                         alert('Could not get signed URL.');

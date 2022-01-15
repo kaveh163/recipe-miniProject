@@ -27,7 +27,7 @@ let searchStore = [];
 let count = 0;
 
 app.use(express.static('public'));
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+// app.use(express.static(path.join(__dirname, '/public','/uploads')));
 app.use(express.json());
 app.use(express.urlencoded({
     extended: true
@@ -53,7 +53,7 @@ require('./routes/user')(app, passport);
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './uploads/')
+        cb(null, path.join(__dirname + '/public/uploads/'))
     },
     filename: function (req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now() + file.originalname.match(/(.jpg$|.png$)/g))
@@ -69,6 +69,7 @@ const upload = multer({
 app.post('/thanks', upload.single('avatar'), function (req, res) {
     count++;
 
+    console.log('body',req.body);
     //Local Storage for count2
     let count2 = JSON.parse(localStorage.getItem("count"));
     if (count2 === null) {
@@ -82,12 +83,16 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     // node local storage
     
 
-    // const obj = {};
-    let foodArr = JSON.parse(localStorage.getItem("food"));
-    let obj = foodArr.pop();
+    const obj = {};
+    
     obj['id'] = JSON.parse(localStorage.getItem("count"));
     obj['food'] = req.body.foodName;
-    obj['image'] = req.file.path;
+    if(S3_BUCKET === 'myBucket') {
+        obj['image'] = "http://localhost:3000/uploads/" + req.file.filename;
+    } else {
+        obj['image'] = req.body.url;
+    }
+    
     obj['altName'] = req.file.originalname;
 
     console.log('file', req.file);
@@ -111,19 +116,19 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     obj['user'] = req.user.firstName;
     // obj['filename'] = req.file.filename; 
     imgStore.push(obj);
-    foodArr.push(obj);
-    localStorage.setItem('food', JSON.stringify(foodArr));
-    // let foodArr = JSON.parse(localStorage.getItem("food"));
-    // if (foodArr === null) {
-    //     foodArr = [];
-    //     foodArr.push(obj);
-    //     console.log('foodArr',foodArr);
-    //     localStorage.setItem('food', JSON.stringify(foodArr));
-    // } else {
-    //     foodArr.push(obj);
-    //     console.log('foodArr',foodArr)
-    //     localStorage.setItem('food', JSON.stringify(foodArr));
-    // }
+    
+    
+    let foodArr = JSON.parse(localStorage.getItem("food"));
+    if (foodArr === null) {
+        foodArr = [];
+        foodArr.push(obj);
+        console.log('foodArr',foodArr);
+        localStorage.setItem('food', JSON.stringify(foodArr));
+    } else {
+        foodArr.push(obj);
+        console.log('foodArr',foodArr)
+        localStorage.setItem('food', JSON.stringify(foodArr));
+    }
     
 
 
@@ -131,16 +136,7 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
 
     // end node local storage
 
-    //node Local Storage
-    // let foodArr = JSON.parse(localStorage.getItem("food"));
-    // if (foodArr === null) {
-    //     foodArr = [];
-    //     foodArr.push(obj);
-    //     localStorage.setItem('food', JSON.stringify(foodArr));
-    // } else {
-    //     foodArr.push(obj);
-    //     localStorage.setItem('food', JSON.stringify(foodArr));
-    // }
+    
 
 
 
@@ -190,21 +186,21 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
 
     req.session.flash = [];
     // req.flash('success').splice(0, req.flash('success').length);
-    // res.redirect('/');
-    res.end();
+    res.redirect('/');
+    // res.end();
 })
 
 app.get('/sign-s3', (req, res) => {
-    // const s3 = new aws.S3();
+    const s3 = new aws.S3();
     const fileName = req.query['file-name'];
     const fileType = req.query['file-type'];
-    // const s3Params = {
-    //     Bucket: S3_BUCKET,
-    //     Key: fileName,
-    //     Expires: 60,
-    //     ContentType: fileType,
-    //     ACL: 'public-read'
-    // };
+    const s3Params = {
+        Bucket: S3_BUCKET,
+        Key: fileName,
+        Expires: 60,
+        ContentType: fileType,
+        ACL: 'public-read'
+    };
 
     // s3.getSignedUrl('putObject', s3Params, (err, data) => {
     // if (err) {
@@ -213,37 +209,8 @@ app.get('/sign-s3', (req, res) => {
     // }
     const returnData = {
         signedRequest: 'data',
-        url: `./uploads/${fileName}`
+        url: `http://localhost:3000/uploads/${fileName}`
     };
-
-    // let foodArr = JSON.parse(localStorage.getItem('food'));
-    // let obj = foodArr.pop();
-    // obj['url'] = returnData.url;
-    // foodArr.push(obj);
-    // console.log('foodArr2', foodArr);
-    // localStorage.setItem('food', JSON.stringify(foodArr));
-
-    
-    // let foodArr = JSON.parse(localStorage.getItem("food"));
-    // console.log(foodArr);
-    // let obj = foodArr.pop();
-    // obj['url'] = returnData.url;
-    // foodArr.push(obj);
-    // console.log('foodArr2', foodArr);
-    // localStorage.setItem('food', JSON.stringify(foodArr));
-    let obj = {};
-    let foodArr = JSON.parse(localStorage.getItem("food"));
-    if (foodArr === null) {
-        foodArr = [];
-        obj['url'] = returnData.url;
-        foodArr.push(obj);
-        localStorage.setItem('food', JSON.stringify(foodArr));
-    } else {
-        obj['url'] = returnData.url;
-        foodArr.push(obj);
-        localStorage.setItem('food', JSON.stringify(foodArr));
-    }
-
     console.log('returnData', returnData)
     res.write(JSON.stringify(returnData));
     res.end();

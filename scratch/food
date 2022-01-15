@@ -1,1 +1,1 @@
-[{"url":"./uploads/hamburger.jpg","id":1,"food":"hamburger","image":"uploads\\avatar-1642204446084.jpg","altName":"hamburger.jpg","ingredients":["salt"],"instruction":"this is hamburger","user":"Kaveh"}]
+[{"id":1,"food":"Pizza","image":"http://localhost:3000/uploads/avatar-1642274358639.jpg","altName":"hamburger.jpg","ingredients":["salt"],"instruction":"This is hamburger","user":"Kaveh"}]
