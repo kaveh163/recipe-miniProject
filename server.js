@@ -94,7 +94,7 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     }
     
     obj['altName'] = req.file.originalname;
-
+    obj['filename'] = req.file.filename;
     console.log('file', req.file);
 
     // console.log(typeof (req.body.txt));
@@ -289,7 +289,7 @@ app.delete('/food/:id', function (req, res) {
     console.log(foodArr);
     foodArr.forEach((item, index) => {
         if (item.id === Number(id)) {
-            fs.unlinkSync(`${item.image}`);
+            fs.unlinkSync(`${__dirname}/public/uploads/${item.filename}`);
             foodArr.splice(index, 1);
         }
 
@@ -300,6 +300,7 @@ app.delete('/food/:id', function (req, res) {
         obj['food'] = item.food;
         obj['image'] = item.image;
         obj['altName'] = item.altName;
+        obj['filename'] = item.filename;
         obj['ingredients'] = item.ingredients;
         obj['instruction'] = item.instruction;
         obj['user'] = item.user;
