@@ -316,11 +316,13 @@ app.delete('/food/:id', function (req, res) {
             imgStore.splice(index, 1);
         }
     });
+    let delFile;
     //Local Storage
     let foodArr = JSON.parse(localStorage.getItem('food'));
     console.log(foodArr);
     foodArr.forEach((item, index) => {
         if (item.id === Number(id)) {
+            delFile = item.filename;
             // fs.unlinkSync(`${__dirname}/public/uploads/${item.filename}`);
             // const params = {
             //     Bucket: S3_BUCKET,
@@ -347,7 +349,17 @@ app.delete('/food/:id', function (req, res) {
     count = updatedFoodArr.length;
     localStorage.setItem('count', JSON.stringify(count));
     console.log('Reached Delete');
-    res.send("Succefully deleted food!");
+    const params = {
+        Bucket: S3_BUCKET,
+        Key: `images/${delFile}`
+    };
+    s3.deleteObject(params, (error, data) => {
+        if (error) {
+            res.status(500).send(error);
+        }
+        res.status(200).send("File has been deleted successfully");
+    });
+    // res.send("Succefully deleted food!");
 })
 // app.listen(PORT, () => {
 //     console.log(`Server listening on http://localhost:${PORT}`);
