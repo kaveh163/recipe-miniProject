@@ -71,7 +71,7 @@ $(function () {
               HTML += `<p class="card-text">${value}</p>`
               HTML += '</div>'
               HTML += '</div>'
-              HTML += '</div>'
+              // HTML += '</div>'
               HTML += '</div>'
 
             })
