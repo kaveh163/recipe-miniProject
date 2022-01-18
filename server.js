@@ -78,7 +78,7 @@ const upload = multer({
             });
         },
         key: function (req, file, cb) {
-            cb(null, Date.now().toString())
+            cb(null, Date.now().toString() + file.originalname)
         }
     }),
     limits: {
@@ -126,7 +126,7 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
 
 
     obj['altName'] = req.file.originalname;
-    obj['filename'] = req.file.filename;
+    obj['filename'] = req.file.key;
 
 
     // console.log(typeof (req.body.txt));

@@ -1,6 +1,6 @@
 // for index.html
 $(function () {
-  alert('hey dude 1');
+  // alert('hey dude 1');
   // let files;
   // let file;
   // Add the following code if you want the name of the file appear on select
@@ -40,7 +40,7 @@ $(function () {
   // getRecipe();
 
   function getRecipe() {
-    alert('hey dude');
+    // alert('hey dude');
     $.ajax({
       type: "GET",
       url: "/home",
@@ -48,9 +48,9 @@ $(function () {
         if (data) {
           let HTML = "";
           $('#recipes').empty();
-          alert('Hey');
+          // alert('Hey');
           // alert(JSON.stringify(data));
-          window.prompt("sometext", JSON.stringify(data));
+          // window.prompt("sometext", JSON.stringify(data));
           data.forEach((item, index) => {
             HTML += `<figure>
               <img src= ${item.image} alt=${item.altName} style="width:100%;height:250px;object-fit: cover">
