@@ -7,6 +7,7 @@ const path = require('path');
 const flash = require('connect-flash');
 const bodyParser = require('body-parser');
 const multer = require('multer');
+const multerS3 = require('multer-s3');
 const passport = require('passport');
 const db = require("./models");
 
@@ -19,8 +20,20 @@ const app = express();
 app.use(cors());
 
 const PORT = process.env.PORT || 3000;
-const S3_BUCKET = process.env.S3_BUCKET || 'myBucket';
-aws.config.region = 'ca-central-1';
+const S3_BUCKET = process.env.S3_BUCKET;
+// aws.config.region = 'ca-central-1';
+aws.config.update({
+    apiVersion: 'latest',
+    // secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    // accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    },
+    region: 'ca-central-1', //your bucket region
+    // profile:process.env.AWS_PROFILE,
+})
+// aws.config.loadFromPath('./config.json');
 let arrStore = [];
 let imgStore = [];
 let searchStore = [];
@@ -51,25 +64,47 @@ app.use(passport.session());
 require('./config/passport/passport')(passport);
 require('./routes/user')(app, passport);
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.join(__dirname + '/public/uploads/'))
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + file.originalname.match(/(.jpg$|.png$)/g))
 
-        // cb(null, file.originalname)
+const s3 = new aws.S3();
+
+//Setting up multer S3
+const upload = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: `${S3_BUCKET}/images`, //upload to image folder
+        acl: 'public-read',
+        metadata: function (req, file, cb) {
+            cb(null, {
+                fieldName: file.fieldname
+            });
+        },
+        key: function (req, file, cb) {
+            cb(null, Date.now().toString())
+        }
+    }),
+    limits: {
+        fileSize: 1000000 // Maximum 1 MB
+    },
+    fileFilter(req, file, cb) {
+        //filter out the file that we doesn't want to upload
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+            // only valid image formats are allowed to upload
+            return cb(new Error('Please upload an Image '))
+        }
+        cb(undefined, true) //pass 'flase' if u want to reject upload
     }
 })
+// End Setting up multer S3
 
-const upload = multer({
-    storage: storage
-})
+
+
+
 
 app.post('/thanks', upload.single('avatar'), function (req, res) {
     count++;
 
-    console.log('body',req.body);
+    console.log('body', req.body);
+    console.log('file', req.file);
     //Local Storage for count2
     let count2 = JSON.parse(localStorage.getItem("count"));
     if (count2 === null) {
@@ -81,21 +116,19 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     }
 
     // node local storage
-    
+
 
     const obj = {};
-    
+
     obj['id'] = JSON.parse(localStorage.getItem("count"));
     obj['food'] = req.body.foodName;
-    if(S3_BUCKET === 'myBucket') {
-        obj['image'] = "http://localhost:3000/uploads/" + req.file.filename;
-    } else {
-        obj['image'] = req.body.url;
-    }
-    
+
+    obj['image'] = req.file.location;
+
+
     obj['altName'] = req.file.originalname;
     obj['filename'] = req.file.filename;
-    console.log('file', req.file);
+
 
     // console.log(typeof (req.body.txt));
     // console.log('txt',req.body.txt);
@@ -116,27 +149,27 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     obj['user'] = req.user.firstName;
     // obj['filename'] = req.file.filename; 
     imgStore.push(obj);
-    
-    
+
+
     let foodArr = JSON.parse(localStorage.getItem("food"));
     if (foodArr === null) {
         foodArr = [];
         foodArr.push(obj);
-        console.log('foodArr',foodArr);
+        console.log('foodArr', foodArr);
         localStorage.setItem('food', JSON.stringify(foodArr));
     } else {
         foodArr.push(obj);
-        console.log('foodArr',foodArr)
+        console.log('foodArr', foodArr)
         localStorage.setItem('food', JSON.stringify(foodArr));
     }
-    
+
 
 
 
 
     // end node local storage
 
-    
+
 
 
 
@@ -289,7 +322,11 @@ app.delete('/food/:id', function (req, res) {
     console.log(foodArr);
     foodArr.forEach((item, index) => {
         if (item.id === Number(id)) {
-            fs.unlinkSync(`${__dirname}/public/uploads/${item.filename}`);
+            // fs.unlinkSync(`${__dirname}/public/uploads/${item.filename}`);
+            // const params = {
+            //     Bucket: S3_BUCKET,
+            //     Key: `folder/subfolder/filename.fileExtension`
+            // };
             foodArr.splice(index, 1);
         }
 

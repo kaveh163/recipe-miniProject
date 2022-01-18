@@ -66,9 +66,9 @@
                 <input type="text" id="ing" class="form-control">
             </section>
             <!-- hidden input for image url recieved from sign-s3 -->
-            <section class="form-group">
+            <!-- <section class="form-group">
                 <input type="text" id="url" name="url" class="form-control">
-            </section>
+            </section> -->
             <!-- end of hidden input for image url recieved from sign-s3 -->
             <section class="text-center">
                 <button type="submit" class="btn btn-outline-danger" id="ing-btn">Add ingredient</button>
@@ -94,7 +94,7 @@
                 <textarea class="form-control" rows="5" id="inst" name="inst" required></textarea>
             </section>
             <section class="text-center">
-                <button type="button" class="btn btn-outline-info subbtn" id="postButton">Submit</button>
+                <button type="submit" class="btn btn-outline-info subbtn" id="postButton">Submit</button>
             </section>
         </form>
     </section>
@@ -104,18 +104,22 @@
     <!-- <script src="./scripts2.js"></script> -->
     <script src="./loggedin.js"></script>
     <script>
-        let files;
-        let file;
-        // Add the following code if you want the name of the file appear on select
+        // let files;
+        // let file;
         $(".custom-file-input").on("change", function () {
-
             var fileName = $(this).val().split("\\").pop();
             $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-            files = document.querySelector(".custom-file-input").files;
-            file = files[0];
-            console.log('inputFiles', files);
-            console.log('inputfile', file);
         });
+        // Add the following code if you want the name of the file appear on select
+        // $(".custom-file-input").on("change", function () {
+
+        //     var fileName = $(this).val().split("\\").pop();
+        //     $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        //     files = document.querySelector(".custom-file-input").files;
+        //     file = files[0];
+        //     console.log('inputFiles', files);
+        //     console.log('inputfile', file);
+        // });
 
         // document.getElementById('postButton').onclick = () => {
         //     document.getElementById('frm').onsubmit = () => {
@@ -127,38 +131,38 @@
         // }
 
 
-        document.getElementById('postButton').onclick = () => {
-            console.log(file);
+        // document.getElementById('postButton').onclick = () => {
+            // console.log(file);
             
-            getSignedRequest(file);
+            // getSignedRequest(file);
             // document.getElementById('frm').submit();
             
 
-        }
+        // }
 
-        function getSignedRequest(file) {
+        // function getSignedRequest(file) {
 
-            const xhr = new XMLHttpRequest();
+        //     const xhr = new XMLHttpRequest();
 
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        console.log('I"m here');
+        //     xhr.onreadystatechange = () => {
+        //         if (xhr.readyState === 4) {
+        //             if (xhr.status === 200) {
+        //                 console.log('I"m here');
                         
 
-                        const response = JSON.parse(xhr.responseText);
-                        console.log(response);
-                        $('#url').val(response.url);
-                        document.getElementById('frm').submit();
-                        // uploadFile(file, response.signedRequest, response.url);
-                    } else {
-                        alert('Could not get signed URL.');
-                    }
-                }
-            };
-            xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`, true);
-            xhr.send();
-        }
+        //                 const response = JSON.parse(xhr.responseText);
+        //                 console.log(response);
+        //                 $('#url').val(response.url);
+        //                 document.getElementById('frm').submit();
+        //                 // uploadFile(file, response.signedRequest, response.url);
+        //             } else {
+        //                 alert('Could not get signed URL.');
+        //             }
+        //         }
+        //     };
+        //     xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`, true);
+        //     xhr.send();
+        // }
     </script>
 
 </body>
