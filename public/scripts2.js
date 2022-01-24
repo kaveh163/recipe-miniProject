@@ -1,31 +1,7 @@
 // for index.html
 $(function () {
-  alert('hey dude 1');
-  // let files;
-  // let file;
-  // Add the following code if you want the name of the file appear on select
-  // $(".custom-file-input").on("change", function () {
-
-  //   var fileName = $(this).val().split("\\").pop();
-  //   $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-  //   files = document.querySelector(".custom-file-input").files;
-  //   file = files[0];
-  //   console.log('inputFiles', files);
-  //   console.log('inputfile', file);
-  // });
-
-  // $('#postButton').on("click", function () {
-  //   document.getElementById('frm').submit();
-  //   getRecipe();
-  //   getRecipe();
-  //   $('#frm').on('submit', function () {
-  //     getRecipe();
-  // getSignedRequest(file);
-  // })
-  // getSignedRequest(file);
-
-
-  // })
+  
+  
   
   getRecipe();
 
@@ -40,7 +16,7 @@ $(function () {
   // getRecipe();
 
   function getRecipe() {
-    alert('hey dude');
+   
     $.ajax({
       type: "GET",
       url: "/home",
@@ -48,9 +24,9 @@ $(function () {
         if (data) {
           let HTML = "";
           $('#recipes').empty();
-          alert('Hey');
+          
           // alert(JSON.stringify(data));
-          window.prompt("sometext", JSON.stringify(data));
+         
           data.forEach((item, index) => {
             HTML += `<figure>
               <img src= ${item.image} alt=${item.altName} style="width:100%;height:250px;object-fit: cover">
@@ -62,8 +38,9 @@ $(function () {
               <span class="bg-danger text-white" style="border: 1px solid black; border-radius:25px; padding: 10px;">ingredients </span></label>`
             //   card deck section
             HTML += '<div class="card-deck mt-3">'
+            HTML += '<div class="d-inline-flex justify-content-start flex-wrap">'
             item.ingredients.forEach((value, index) => {
-              HTML += '<div class="d-flex justify-content-start">'
+              HTML += '<div>'
 
               HTML += '<div class="card bg-primary" style="border-radius:50%">'
               HTML += '<div class="card-body text-center text-white">'
@@ -72,9 +49,10 @@ $(function () {
               HTML += '</div>'
               HTML += '</div>'
               HTML += '</div>'
-              HTML += '</div>'
+              
 
             })
+            HTML += '</div>'
             HTML += '</div>'
             HTML += '<hr>'
             //   end of card deck section

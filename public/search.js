@@ -73,8 +73,9 @@ $(function () {
               <span class="bg-danger text-white" style="border: 1px solid black; border-radius:25px; padding: 10px;">ingredients </span></label>`
             //   card deck section
              HTML += '<div class="card-deck mt-3">'
+             HTML += '<div class="d-inline-flex justify-content-start flex-wrap">'
               item.ingredients.forEach((value, index)=> {
-                  HTML += '<div class="d-flex justify-content-start">'
+                  HTML += '<div>'
                 // HTML += '<div class="card-deck">'
                 HTML += '<div class="card bg-primary" style="border-radius:50%">'
                 HTML += '<div class="card-body text-center text-white">'
@@ -86,6 +87,7 @@ $(function () {
                   HTML+= '</div>'
                   
               })
+              HTML+= '</div>'
               HTML+= '</div>'
              HTML += '<hr>'
             //   end of card deck section
