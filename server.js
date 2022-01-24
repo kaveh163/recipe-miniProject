@@ -12,7 +12,7 @@ const multerS3 = require('multer-s3');
 const passport = require('passport');
 const db = require("./models");
 
-main().catch(err => console.log('Connection Error To Mongodb server' + err));
+main().catch(err => console.log('Connection Err','Connection Error To Mongodb server' + ' ' + err));
 
 async function main() {
     
@@ -20,11 +20,11 @@ async function main() {
         process.env.MONGODB_URI || 'mongodb://localhost:27017/RecipeDB', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            useCreateIndex: true,
-            useFindAndModify: false
+            // useCreateIndex: true,
+            // useFindAndModify: false
         }
     );
-    console.log('Successfully Connected to Mongo Atlas');
+    console.log('Connection','Successfully Connected to Mongo Atlas');
 }
 
 if (typeof localStorage === "undefined" || localStorage === null) {
