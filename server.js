@@ -9,6 +9,22 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const passport = require('passport');
 const db = require("./models");
+
+//import mongoose and connect to mongo db
+const mongoose = require('mongoose');
+
+main().catch(err => console.log('Error in DB connection : ' + err));
+
+async function main() {
+    await mongoose.connect('mongodb://localhost:27017/RecipeDB');
+    console.log('MongoDB connection succeeded')
+}
+// End of import mongoose and connect to mongo db
+// Bring in the models
+let Recipe = require('./bootstrap/models/recipe.model')
+let Ingredient = require('./bootstrap/models/ingredient.model');
+// end of bringing the models
+
 if (typeof localStorage === "undefined" || localStorage === null) {
     var LocalStorage = require('node-localstorage').LocalStorage;
     localStorage = new LocalStorage('./scratch');
@@ -64,10 +80,10 @@ const upload = multer({
     storage: storage
 })
 
-app.post('/thanks', upload.single('avatar'), function (req, res) {
+app.post('/thanks', upload.single('avatar'), async function (req, res) {
     count++;
 
-    console.log('body',req.body);
+    console.log('body', req.body);
     //Local Storage for count2
     let count2 = JSON.parse(localStorage.getItem("count"));
     if (count2 === null) {
@@ -77,20 +93,47 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
         count2++;
         localStorage.setItem("count", JSON.stringify(count2));
     }
+    const txtString = req.body.txt;
+    console.log('txtString', txtString);
+    //get the ingredient string and turn it into an array of ingredients
+    let splitTxt = txtString.split(',');
+    console.log('server ingredients', splitTxt);
+
+    //Insert into Mongo DB
+    const recipe = new Recipe({
+        food: req.body.foodName,
+        image: "http://localhost:3000/uploads/" + req.file.filename,
+        altName: req.file.originalname,
+        filename: req.file.filename,
+        ingredients: splitTxt,
+        instruction: req.body.inst,
+        user: req.user.firstName
+
+
+    });
+    console.log('recipeModel', recipe);
+    recipe.save(function (err) {
+        if (err) return handleError(err);
+
+    });
+    const allRecipes = await Recipe.find({});
+    console.log(allRecipes);
+    //End of inserting to Mongo DB
+
 
     // node local storage
-    
+
 
     const obj = {};
-    
+
     obj['id'] = JSON.parse(localStorage.getItem("count"));
     obj['food'] = req.body.foodName;
-    if(S3_BUCKET === 'myBucket') {
+    if (S3_BUCKET === 'myBucket') {
         obj['image'] = "http://localhost:3000/uploads/" + req.file.filename;
     } else {
         obj['image'] = req.body.url;
     }
-    
+
     obj['altName'] = req.file.originalname;
     obj['filename'] = req.file.filename;
     console.log('file', req.file);
@@ -98,47 +141,62 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     // console.log(typeof (req.body.txt));
     // console.log('txt',req.body.txt);
 
-    const txtString = req.body.txt;
+    // const txtString = req.body.txt;
     //temporary delete these two statements
 
     // const patt = /[a-zA-Z]+/g;
     // const result = txtString.match(patt);
     //end temporary delete these two statements
-    console.log('txtString', txtString);
+    // console.log('txtString', txtString);
     //get the ingredient string and turn it into an array of ingredients
-    let splitTxt = txtString.split(',');
-    console.log('server ingredients', splitTxt);
+    // let splitTxt = txtString.split(',');
+    // console.log('server ingredients', splitTxt);
     obj['ingredients'] = splitTxt;
     obj['instruction'] = req.body.inst;
     // Add user
     obj['user'] = req.user.firstName;
     // obj['filename'] = req.file.filename; 
     imgStore.push(obj);
-    
-    
+
+
     let foodArr = JSON.parse(localStorage.getItem("food"));
     if (foodArr === null) {
         foodArr = [];
         foodArr.push(obj);
-        console.log('foodArr',foodArr);
+        console.log('foodArr', foodArr);
         localStorage.setItem('food', JSON.stringify(foodArr));
     } else {
         foodArr.push(obj);
-        console.log('foodArr',foodArr)
+        console.log('foodArr', foodArr)
         localStorage.setItem('food', JSON.stringify(foodArr));
     }
-    
-
-
-
 
     // end node local storage
 
-    
+
+    //insert into ingredients collection
+    splitTxt.forEach((item, index) => {
+        let query = {
+            ingredient: item
+        };
+        let update = {
+            $setOnInsert: {
+                ingredient: item
+            }
+        }
+        let options = {
+            upsert: true
+        };
+        Ingredient.findOneAndUpdate(query, update, options)
+            .catch(err => console.log(err));
+
+    })
 
 
+    // end of insert into ingredients collection
 
-    //store in node-local-storage
+
+    //store in node-local-storage for ingredient storage
     let ingArr = JSON.parse(localStorage.getItem("ingredient"));
     if (ingArr === null) {
         ingArr = [];
@@ -215,14 +273,16 @@ app.get('/sign-s3', (req, res) => {
     // });
 });
 
-app.get('/thanks', function (req, res) {
+app.get('/thanks', async function (req, res) {
     let ingArr = JSON.parse(localStorage.getItem("ingredient"));
+    //get all documents from ingredients collection
+    let AllIngredients = await Ingredient.find({});
     // res.json(arrStore);
-    res.json(ingArr);
+    res.json(AllIngredients);
 
 })
 
-app.get('/home', function (req, res) {
+app.get('/home', async function (req, res) {
 
     // res.send(`<img src=${imgStore[0].image} alt=${imgStore[0].name}>`);
     //     res.send(`<figure style="text-align: center;">
@@ -231,16 +291,17 @@ app.get('/home', function (req, res) {
     //   </figure>`)
 
     //Local Storage
-    let foodArr = JSON.parse(localStorage.getItem('food'));
+    // let foodArr = JSON.parse(localStorage.getItem('food'));
+    let AllRecipes = await Recipe.find({});
     // res.json(imgStore);
-    res.json(foodArr);
+    res.json(AllRecipes);
 })
 app.get('/index', function (req, res) {
     req.session.flash = [];
     // req.flash('success').splice(0, req.flash('success').length);
     res.redirect('/');
 })
-app.post('/ingredients', function (req, res) {
+app.post('/ingredients', async function (req, res) {
     searchStore = [];
     console.log('ingredients', req.body);
     const ingredArr = req.body.ingred;
@@ -248,7 +309,9 @@ app.post('/ingredients', function (req, res) {
 
     //Local Storage
     let foodArr = JSON.parse(localStorage.getItem('food'));
-    foodArr.forEach((value, index) => {
+    // get All documents from recipes collection
+    let AllRecipes = await Recipe.find({});
+    AllRecipes.forEach((value, index) => {
         let count = 0;
         if (value.ingredients.length >= ingredArr.length) {
             for (let i = 0; i < value.ingredients.length; i++) {
@@ -274,21 +337,24 @@ app.get('/search', function (req, res) {
 app.get('/post/food', isLoggedIn, function (req, res) {
     res.redirect('/post.html');
 });
-app.delete('/food/:id', function (req, res) {
+app.delete('/food/:id', async function (req, res) {
     const id = req.params.id;
     console.log('del', id);
-    imgStore.forEach((item, index) => {
-        if (item.id === Number(id)) {
-            imgStore.splice(index, 1);
-        }
-    });
+    // imgStore.forEach((item, index) => {
+    //     if (item.id === Number(id)) {
+    //         imgStore.splice(index, 1);
+    //     }
+    // });
+    await Recipe.deleteOne({_id: id})
     //Local Storage
     let foodArr = JSON.parse(localStorage.getItem('food'));
+    // get All the documents from recipes collection
+    let AllRecipes = await Recipe.find({});
     console.log(foodArr);
-    foodArr.forEach((item, index) => {
-        if (item.id === Number(id)) {
+    AllRecipes.forEach((item, index) => {
+        if (item._id === id) {
             fs.unlinkSync(`${__dirname}/public/uploads/${item.filename}`);
-            foodArr.splice(index, 1);
+            // AllRecipes.splice(index, 1);
         }
 
     });
