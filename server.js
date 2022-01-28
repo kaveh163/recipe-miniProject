@@ -374,50 +374,57 @@ app.get('/post/food', isLoggedIn, function (req, res) {
 app.delete('/food/:id', async function (req, res) {
     const id = req.params.id;
     console.log('del', id);
-    imgStore.forEach((item, index) => {
-        if (item.id === Number(id)) {
-            imgStore.splice(index, 1);
-        }
-    });
-    
-    // Delete document from recipes collection
-    await Recipe.deleteOne({_id: id})
-    // End of Delete document from recipes collection
-    let delFile;
+    // imgStore.forEach((item, index) => {
+    //     if (item.id === Number(id)) {
+    //         imgStore.splice(index, 1);
+    //     }
+    // });
+
+
+    // let delFile;
     //Local Storage
-    let foodArr = JSON.parse(localStorage.getItem('food'));
-    console.log(foodArr);
+    // let foodArr = JSON.parse(localStorage.getItem('food'));
+    // console.log(foodArr);
     //Get All the documents from recipes collection
-    let AllRecipes = await Recipe.find({});
-    AllRecipes.forEach((item, index) => {
-        if (item._id === id) {
-            delFile = item.filename;
+    // let AllRecipes = await Recipe.find({});
+    // AllRecipes.forEach((item, index) => {
+        // if (item._id === id) {
+            // delFile = item.filename;
             // fs.unlinkSync(`${__dirname}/public/uploads/${item.filename}`);
             // const params = {
             //     Bucket: S3_BUCKET,
             //     Key: `folder/subfolder/filename.fileExtension`
             // };
             // foodArr.splice(index, 1);
-        }
+        // }
 
-    });
-    const updatedFoodArr = foodArr.map((item, index) => {
-        const obj = {};
-        obj['id'] = index + 1;
-        obj['food'] = item.food;
-        obj['image'] = item.image;
-        obj['altName'] = item.altName;
-        obj['filename'] = item.filename;
-        obj['ingredients'] = item.ingredients;
-        obj['instruction'] = item.instruction;
-        obj['user'] = item.user;
-        return obj;
-    })
-    localStorage.setItem('food', JSON.stringify(updatedFoodArr));
-    let count = JSON.parse(localStorage.getItem("count"));
-    count = updatedFoodArr.length;
-    localStorage.setItem('count', JSON.stringify(count));
+    // });
+    // const updatedFoodArr = foodArr.map((item, index) => {
+    //     const obj = {};
+    //     obj['id'] = index + 1;
+    //     obj['food'] = item.food;
+    //     obj['image'] = item.image;
+    //     obj['altName'] = item.altName;
+    //     obj['filename'] = item.filename;
+    //     obj['ingredients'] = item.ingredients;
+    //     obj['instruction'] = item.instruction;
+    //     obj['user'] = item.user;
+    //     return obj;
+    // })
+    // localStorage.setItem('food', JSON.stringify(updatedFoodArr));
+    // let count = JSON.parse(localStorage.getItem("count"));
+    // count = updatedFoodArr.length;
+    // localStorage.setItem('count', JSON.stringify(count));
     console.log('Reached Delete');
+    // Find the specific document to delete
+    const delRecipe = await Recipe.findById(id).exec();
+    const delFile = delRecipe.filename;
+    // End of find the specific document to delete
+    // Delete document from recipes collection
+    await Recipe.deleteOne({
+        _id: id
+    })
+    // End of Delete document from recipes collection
     const params = {
         Bucket: S3_BUCKET,
         Key: `images/${delFile}`
@@ -426,6 +433,7 @@ app.delete('/food/:id', async function (req, res) {
         if (error) {
             res.status(500).send(error);
         }
+        
         res.status(200).send("File has been deleted successfully");
     });
     // res.send("Succefully deleted food!");
