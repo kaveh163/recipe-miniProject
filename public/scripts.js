@@ -144,7 +144,7 @@ $(function () {
                 console.log(data);
                 myHTML += "<option selected>Select Menu</option>"
                 data.forEach((value, index) => {
-                    myHTML += `<option>${value}</option>`
+                    myHTML += `<option>${value.ingredient}</option>`
                 })
                 
                 $('#sel').append(myHTML);
