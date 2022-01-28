@@ -8,11 +8,11 @@ $(function(){
                 $('#tbody').empty();
                 data.forEach((item, index)=> {
                     HTML += '<tr>'
-                    HTML += `<td>${item.id}</td>`;
+                    HTML += `<td>${item._id}</td>`;
                     HTML += `<td>${item.food}</td>`;
                     HTML += `<td><img src="${item.image}" width="30px" height="30px"></td>`;
                     HTML += `<td>${item.user}</td>`
-                    HTML += `<td><button class="bg-danger delete" data-id="${item.id}" >Delete</button></td>`
+                    HTML += `<td><button class="bg-danger delete" data-id="${item._id}" >Delete</button></td>`
                     HTML+= '</tr>'
                     
                 })

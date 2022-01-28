@@ -12,10 +12,11 @@ const multerS3 = require('multer-s3');
 const passport = require('passport');
 const db = require("./models");
 
-main().catch(err => console.log('Connection Err','Connection Error To Mongodb server' + ' ' + err));
+//Connect to Mongo DB
+main().catch(err => console.log('Connection Err', 'Connection Error To Mongodb server' + ' ' + err));
 
 async function main() {
-    
+
     await mongoose.connect(
         process.env.MONGODB_URI || 'mongodb://localhost:27017/RecipeDB', {
             useNewUrlParser: true,
@@ -24,8 +25,14 @@ async function main() {
             // useFindAndModify: false
         }
     );
-    console.log('Connection','Successfully Connected to Mongo Atlas');
+    console.log('Connection', 'Successfully Connected to Mongo Atlas');
 }
+// End of Connect to Mongo DB
+
+// Bring in the models
+let Recipe = require('./bootstrap/models/recipe.model')
+let Ingredient = require('./bootstrap/models/ingredient.model');
+//End of Bringing the models
 
 if (typeof localStorage === "undefined" || localStorage === null) {
     var LocalStorage = require('node-localstorage').LocalStorage;
@@ -114,7 +121,7 @@ const upload = multer({
 
 
 
-app.post('/thanks', upload.single('avatar'), function (req, res) {
+app.post('/thanks', upload.single('avatar'), async function (req, res) {
     count++;
 
     console.log('body', req.body);
@@ -129,9 +136,31 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
         localStorage.setItem("count", JSON.stringify(count2));
     }
 
+    const txtString = req.body.txt;
+    console.log('txtString', txtString);
+    //get the ingredient string and turn it into an array of ingredients
+    let splitTxt = txtString.split(',');
+    console.log('server ingredients', splitTxt);
+
+    //Insert into Mongo DB recipes collection
+    const recipe = new Recipe({
+        food: req.body.foodName,
+        image: req.file.location,
+        altName: req.file.originalname,
+        filename: req.file.key,
+        ingredients: splitTxt,
+        instruction: req.body.inst,
+        user: req.user.firstName
+
+
+    });
+    console.log('recipeModel', recipe);
+    recipe.save(function (err) {
+        if (err) return handleError(err);
+
+    });
+    //End of Insert into Mongo DB recipes collection
     // node local storage
-
-
     const obj = {};
 
     obj['id'] = JSON.parse(localStorage.getItem("count"));
@@ -147,16 +176,16 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
     // console.log(typeof (req.body.txt));
     // console.log('txt',req.body.txt);
 
-    const txtString = req.body.txt;
+    // const txtString = req.body.txt;
     //temporary delete these two statements
 
     // const patt = /[a-zA-Z]+/g;
     // const result = txtString.match(patt);
     //end temporary delete these two statements
-    console.log('txtString', txtString);
+    // console.log('txtString', txtString);
     //get the ingredient string and turn it into an array of ingredients
-    let splitTxt = txtString.split(',');
-    console.log('server ingredients', splitTxt);
+    // let splitTxt = txtString.split(',');
+    // console.log('server ingredients', splitTxt);
     obj['ingredients'] = splitTxt;
     obj['instruction'] = req.body.inst;
     // Add user
@@ -177,13 +206,26 @@ app.post('/thanks', upload.single('avatar'), function (req, res) {
         localStorage.setItem('food', JSON.stringify(foodArr));
     }
 
-
-
-
-
     // end node local storage
 
+    //Insert into ingredients Collection
+    splitTxt.forEach((item, index) => {
+        let query = {
+            ingredient: item
+        };
+        let update = {
+            $setOnInsert: {
+                ingredient: item
+            }
+        }
+        let options = {
+            upsert: true
+        };
+        Ingredient.findOneAndUpdate(query, update, options)
+            .catch(err => console.log(err));
 
+    })
+    //End of Insert into ingredients Collection
 
 
 
@@ -264,14 +306,16 @@ app.get('/sign-s3', (req, res) => {
     // });
 });
 
-app.get('/thanks', function (req, res) {
+app.get('/thanks', async function (req, res) {
     let ingArr = JSON.parse(localStorage.getItem("ingredient"));
+    //get all documents from ingredients collection
+    let AllIngredients = await Ingredient.find({});
     // res.json(arrStore);
-    res.json(ingArr);
+    res.json(AllIngredients);
 
 })
 
-app.get('/home', function (req, res) {
+app.get('/home', async function (req, res) {
 
     // res.send(`<img src=${imgStore[0].image} alt=${imgStore[0].name}>`);
     //     res.send(`<figure style="text-align: center;">
@@ -282,14 +326,16 @@ app.get('/home', function (req, res) {
     //Local Storage
     let foodArr = JSON.parse(localStorage.getItem('food'));
     // res.json(imgStore);
-    res.json(foodArr);
+    // Get All recipe documents from recipes collection
+    let AllRecipes = await Recipe.find({});
+    res.json(AllRecipes);
 })
 app.get('/index', function (req, res) {
     req.session.flash = [];
     // req.flash('success').splice(0, req.flash('success').length);
     res.redirect('/');
 })
-app.post('/ingredients', function (req, res) {
+app.post('/ingredients', async function (req, res) {
     searchStore = [];
     console.log('ingredients', req.body);
     const ingredArr = req.body.ingred;
@@ -297,7 +343,9 @@ app.post('/ingredients', function (req, res) {
 
     //Local Storage
     let foodArr = JSON.parse(localStorage.getItem('food'));
-    foodArr.forEach((value, index) => {
+    // Get all documents from recipes collection
+    let AllRecipes = await Recipe.find({});
+    AllRecipes.forEach((value, index) => {
         let count = 0;
         if (value.ingredients.length >= ingredArr.length) {
             for (let i = 0; i < value.ingredients.length; i++) {
@@ -323,7 +371,7 @@ app.get('/search', function (req, res) {
 app.get('/post/food', isLoggedIn, function (req, res) {
     res.redirect('/post.html');
 });
-app.delete('/food/:id', function (req, res) {
+app.delete('/food/:id', async function (req, res) {
     const id = req.params.id;
     console.log('del', id);
     imgStore.forEach((item, index) => {
@@ -331,19 +379,25 @@ app.delete('/food/:id', function (req, res) {
             imgStore.splice(index, 1);
         }
     });
+    
+    // Delete document from recipes collection
+    await Recipe.deleteOne({_id: id})
+    // End of Delete document from recipes collection
     let delFile;
     //Local Storage
     let foodArr = JSON.parse(localStorage.getItem('food'));
     console.log(foodArr);
-    foodArr.forEach((item, index) => {
-        if (item.id === Number(id)) {
+    //Get All the documents from recipes collection
+    let AllRecipes = await Recipe.find({});
+    AllRecipes.forEach((item, index) => {
+        if (item._id === id) {
             delFile = item.filename;
             // fs.unlinkSync(`${__dirname}/public/uploads/${item.filename}`);
             // const params = {
             //     Bucket: S3_BUCKET,
             //     Key: `folder/subfolder/filename.fileExtension`
             // };
-            foodArr.splice(index, 1);
+            // foodArr.splice(index, 1);
         }
 
     });
