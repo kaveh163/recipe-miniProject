@@ -104,7 +104,7 @@ const upload = multer({
         }
     }),
     limits: {
-        fileSize: 1000000 // Maximum 1 MB
+        fileSize: 10000000 // Maximum 10 MB
     },
     fileFilter(req, file, cb) {
         //filter out the file that we doesn't want to upload
