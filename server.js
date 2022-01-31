@@ -342,7 +342,7 @@ app.post('/ingredients', async function (req, res) {
     console.log(ingredArr);
 
     //Local Storage
-    let foodArr = JSON.parse(localStorage.getItem('food'));
+    // let foodArr = JSON.parse(localStorage.getItem('food'));
     // Get all documents from recipes collection
     let AllRecipes = await Recipe.find({});
     AllRecipes.forEach((value, index) => {
@@ -362,11 +362,14 @@ app.post('/ingredients', async function (req, res) {
             }
         }
     })
-    res.redirect('/search');
-})
-app.get('/search', function (req, res) {
+    // console.log("redirect");
+    //res.redirect('/search');
     res.send(searchStore);
-});
+})
+// app.get('/search', function (req, res) {
+//     console.log("/search");
+//     res.send(searchStore);
+// });
 
 app.get('/post/food', isLoggedIn, function (req, res) {
     res.redirect('/post.html');
